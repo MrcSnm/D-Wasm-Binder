@@ -22,6 +22,7 @@ struct Hip_DynamicArray(T)
     }
     void reserve(size_t capacity)
     {
+        puts("Ta reservando");
         if(this.capacity < capacity)
         {
             this.capacity = capacity;
@@ -52,9 +53,9 @@ struct Hip_DynamicArray(T)
     }
     ~this()
     {
+        puts("Deleted DynArr");
         free(this.arr);
     }
-
 
     auto dup(T)()
     {

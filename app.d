@@ -19,10 +19,13 @@ import std.conv : to;
 import std.range : enumerate;
 import precompiler.implementations.dynarray;
 import precompiler.implementations.staticarray;
-import precompiler.dlib.stdio;
 import core.stdc.string;
 import precompiler.implementations.object;
-
+import precompiler.implementations.aa;
+import precompiler.implementations.string;
+import precompiler.clib.stdio;
+import precompiler.clib.stdlib;
+import precompiler.implementations.hashing;
 
 struct MTest
 {
@@ -33,27 +36,50 @@ struct MTest
         arr[ind] = 500;
         return arr[ind];
     }
-    mixin Hip_Object!"MTest";
+    // mixin Hip_Object!"MTest";
 }
 
 double add(double a, double b)
 {
-    auto arr = Hip_DynamicArray!int(3);
-    int counter = 0;
-
-    // arr.precompilerAssign(3, 500, 200, 100);
-    auto stArr = Hip_StaticArray!(int, 3)(200, 100, 500);
-    arr = stArr;
+    // auto arr = Hip_DynamicArray!int(8);
+    // int counter = 0;
+    
+    // auto stArr = Hip_StaticArray!(int, 3)(200, 100, 500);
+    // arr = stArr;
     // arr ~= 232; 
-    foreach(i, num; arr.enumerate)
-        counter = i;
 
-    return counter;
+    // puts(str.str);
+    // cprint("Teste aqui %d", 5);
+    // auto aa = Hip_AssociativeArray!(int, int).create;
+    // aa.set(5, 10);
+    // auto bar = aa.get(5);
+    // if(bar == null)
+    // {
+    //     puts("Merda");
+    // }
+    // else puts("Nice");
+    
+    auto arr = Hip_AssociativeArray!(int, int).create;
+    arr.set(5, 10);
+
+
+    // size_t sz = cast(size_t)(cast(void*)&arr);
+    // // puts(cast(char*)sz);
+    // foreach(num; arr)
+    //     counter+=num;
+
+    return 0;
 }
 
-const(char*) mtest()
+void aaTest()
 {
-    return toStringz("OI");
+    auto arr = Hip_AssociativeArray!(int, int).create;
+    arr.set(5, 10);
+    
+
+
+    // auto str = Hip_cString("teste");
+
 }
 void _start()
 {

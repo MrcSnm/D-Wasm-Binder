@@ -25,10 +25,10 @@ mixin template Hip_ArrayImpl(alias arrName, T)
 
     //Foreach implementation as range(for some reason opApply don't work)
     size_t _feachBegin;
-    bool empty()const{return (_feachBegin == this.length);}
+    bool empty(){return (_feachBegin == this.length);}
     void popFront(){_feachBegin++;}
-    T front()const{return arrName[_feachBegin];}
-    size_t back()const{return this.length - 1;}
+    T front(){return arrName[_feachBegin];}
+    size_t back(){return this.length - 1;}
     void popBack(){_feachBegin--;}
     auto save()
     {

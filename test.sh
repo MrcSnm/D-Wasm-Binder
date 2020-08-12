@@ -7,4 +7,4 @@ emcc -O3 libs.cpp -s USE_SDL=2 \
 -s USE_SDL_TTF=2 \
 -s USE_SDL_NET=2 \
 -o out/libs.js &&
-emcc -v -g -O0 bitcode/app.bc -s EXPORTED_FUNCTIONS='["_add"]' -s EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' -o dtest/index.html
+emcc -O0 bitcode/app.bc -s EXPORTED_FUNCTIONS='["_add"]' -s EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' -o dtest/index.html
