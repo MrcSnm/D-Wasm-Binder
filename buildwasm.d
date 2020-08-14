@@ -41,6 +41,12 @@ string[] debugs = [];
 
 enum tripleSystem = "unknown-unknown-wasm";
 
+void jumpAndShowError()
+{
+	writeln("---------------------------------------");
+	writeln("------------WASM-BUILDING-ERROR--------");
+	writeln("---------------------------------------");
+}
 
 string exportToWasm(string[] toExport, string exportName, bool prependUnderline = true)
 {
@@ -67,7 +73,7 @@ string[] getSources(string path) {
 	return files;
 }
 
-void buildProgram(string arch, string[] sources) {
+bool buildProgram(string arch, string[] sources) {
 	string[] command = [compiler];
 
 	// foreach (sourcePath; sourcePaths)
@@ -89,9 +95,12 @@ void buildProgram(string arch, string[] sources) {
 	Pid pid = spawnProcess(command);
 	if(pid.wait != 0)
 	{
+		jumpAndShowError();
 		writeln("Build failed! Check your command:");
 		writeln(command.join(" "));
+		return false;
 	}
+	return true;
 }
 
 void buildSDL()
@@ -130,6 +139,7 @@ void buildEmscripten()
 	Pid pid = spawnProcess(command);
 	if(pid.wait() != 0)
 	{
+		jumpAndShowError();
 		writeln("Your emscripten build failed, check your command");
 		writeln(command.join(" "));
 	}
@@ -156,7 +166,10 @@ void main() {
 	foreach (sourcePath; sourcePaths)
 		sources ~= sourcePath.getSources;
 	foreach (arch; archs)
-		buildProgram(arch, sources);
+	{
+		if(!buildProgram(arch, sources))
+			return;
+	}
 	buildSDL();
 	buildEmscripten();
 }

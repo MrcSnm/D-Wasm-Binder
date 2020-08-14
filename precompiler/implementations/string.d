@@ -2,11 +2,26 @@ module precompiler.implementations.string;
 import std.conv : to;
 import core.stdc.string;
 import precompiler.clib.stdio;
+import precompiler.implementations.object;
 import precompiler.clib.stdlib;
 
 auto asCStr(T : string)(T value){return cast(char*)value;}
-auto asCStr(T : float)(T value){char* temp; sprintf(temp, "%f", value); return temp;}
-auto asCStr(T : int)(T value){char* temp; sprintf(temp, "%d", value); return temp;}
+auto asCStr(T : float)(T value)
+{
+    char* temp;
+    sprintf(temp, "%f", value);
+    char* ret = New!char(strlen(temp)+1);
+    strcpy(ret, temp);
+    return ret;
+}
+auto asCStr(T : int)(T value)
+{
+    char* temp;
+    sprintf(temp, "%d", value);
+    char* ret = New!char(strlen(temp)+1);
+    strcpy(ret, temp);
+    return ret;
+}
 auto asCStr(T : size_t)(T value)
 {
     char* temp;
@@ -14,63 +29,31 @@ auto asCStr(T : size_t)(T value)
         sprintf(temp, "%u", value);
     else static if(size_t.sizeof == ulong.sizeof)
         sprintf(temp, "%lu", value);
-    return temp;
+    char* ret = New!char(strlen(temp)+1);
+    strcpy(ret, temp);
+    return ret;
 }
-
-/**
-*   Used only for generating functions for formatting strings
-*/
-// char* format(T, A...)(T f, A arg)
-// {
-//     uint currArg = 0;
-//     uint c = 0;
-//     bool escaped = false;
-//     uint retCount = 0;
-//     uint currSize = 32;
-//     char* ret = cast(char*)malloc(32); //32 As initial size
-
-//     while(f[c] != 0)
-//     {
-//         if(escaped && f[c] == 's')
-//         {
-//             char* temp =  asCStr(arg[currArg]);
-//             uint tempC = strlen(temp);
-//             if(tempC + retCount >= currSize)
-//             {
-//                 currSize<<= 1;
-//                 ret = cast(char*)(realloc(ret, currSize));
-//             }
-//             retCount+= tempC;
-//             strcat(ret, temp);
-//             currArg++;
-//         }
-//         else
-//         {
-//             if(!escaped && f[c] == '%')
-//                 escaped = true;
-//             else
-//             {
-//                 ret[retCount]=f[c];
-//                 retCount++;
-//                 if(retCount >= currSize)
-//                 {
-//                     currSize<<= 1;
-//                     ret = cast(char*)(realloc(ret, currSize));
-//                 }
-//                 escaped = false;
-//             }
-//         }
-//         c++;
-//     }
-//     return strcat(ret, "\0");
-// }
-
-extern(C):
 struct Hip_cString
 {
     
     char* str;
     size_t length;
+
+    static auto opCall(T: string)(T str)
+    {
+        char* buf = cast(char*)str;
+        Hip_cString ret;
+        ret.str = buf;
+        ret.length = strlen(buf);
+        return ret;
+    }
+    static auto opCall(T: char*)(T initStr)
+    {
+        Hip_cString ret;
+        ret.str = initStr;
+        ret.length = strlen(initStr);
+        return ret;
+    }
 
     auto opAssign(T : char*)(T value)
     {
@@ -110,10 +93,3 @@ struct Hip_cString
 //     str.length = strlen(initStr);
 //     return str;
 // }
-
-extern(C) int ret500()
-{
-    int b = 500;
-    int d = 200;
-    return b+d;
-}

@@ -9,7 +9,7 @@
 		"files.exclude": 
 		{
 			"libs.cpp":true,
-			// "bitcode":true,
+			"bitcode":true,
 			"**/*.wasm":true,
 			"**/*.js":true,
 			"**/.git": true,

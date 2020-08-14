@@ -18,11 +18,11 @@ struct Hip_DynamicArray(T)
     }
     void alloc(size_t toalloc)
     {
-        arr = cast(T*)realloc(arr, toalloc);
+        arr = cast(T*)realloc(arr, T.sizeof*toalloc);
     }
     void reserve(size_t capacity)
     {
-        puts("Ta reservando");
+        cprint("Ta reservando %u", capacity);
         if(this.capacity < capacity)
         {
             this.capacity = capacity;
@@ -41,7 +41,7 @@ struct Hip_DynamicArray(T)
     void append(T val)
     {
         if(this.length == this.capacity)
-            this.reserve(this.length+4); //For decreasing realloc amount
+            this.reserve(this.length+16); //For decreasing realloc amount
         this[$] = val;
         this.length++;
     }
@@ -53,7 +53,7 @@ struct Hip_DynamicArray(T)
     }
     ~this()
     {
-        puts("Deleted DynArr");
+        // puts("Deleted DynArr");
         free(this.arr);
     }
 

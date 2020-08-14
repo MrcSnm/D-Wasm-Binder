@@ -39,6 +39,7 @@ struct MTest
     // mixin Hip_Object!"MTest";
 }
 
+
 double add(double a, double b)
 {
     // auto arr = Hip_DynamicArray!int(8);
@@ -59,9 +60,14 @@ double add(double a, double b)
     // }
     // else puts("Nice");
     
-    auto arr = Hip_AssociativeArray!(int, int).create;
-    arr.set(5, 10);
-
+    auto arr = Hip_AssociativeArray!(char*, int).create;
+    char* t = cast(char*)"ieme";
+    arr.set(t, 500);
+    cprint("%u", hashFunction(t));
+    return arr[t];
+    // arr.set(5, 10);
+    // int* ret = arr.get(5);
+    // return *ret;
 
     // size_t sz = cast(size_t)(cast(void*)&arr);
     // // puts(cast(char*)sz);
@@ -73,8 +79,8 @@ double add(double a, double b)
 
 void aaTest()
 {
-    auto arr = Hip_AssociativeArray!(int, int).create;
-    arr.set(5, 10);
+    // auto arr = Hip_AssociativeArray!(int, int).create;
+    // arr.set(5, 10);
     
 
 

@@ -1,5 +1,7 @@
 module precompiler.implementations.object;
 import precompiler.clib.stdlib;
+import core.stdc.string;
+import core.vararg;
 import precompiler.clib.stdio;
 
 /**
@@ -31,7 +33,7 @@ public:
 */
 template New(T)
 {
-    T* New()
+    T* New(size_t quant = 1)
     {
         import precompiler.implementations.string : Hip_cString;
         newCount++;
@@ -40,7 +42,15 @@ template New(T)
             newSize+= newCountPattern;
             newCalls = cast(void**)realloc(newCalls, newSize * (void*).sizeof);
         }
-        newCalls[newCount-1] = malloc(T.sizeof);
+        newCalls[newCount-1] = malloc(T.sizeof * quant);
+        if(newCalls[newCount-1] == null)
+            perror("Out of memory");
+        else
+        {
+            memset(newCalls[newCount-1], 0, T.sizeof * quant);
+            //Initialize it with arguments
+
+        }
         return cast(T*)newCalls[newCount - 1];
     }
 }

@@ -2,6 +2,9 @@ module precompiler.implementations.aa;
 import precompiler.implementations.dynarray;
 import precompiler.implementations.hashing;
 import precompiler.implementations.object;
+import precompiler.implementations.string;
+import precompiler.clib.stdio;
+import core.stdc.string;
 
 struct Hip_Pair(K, V)
 {
@@ -9,16 +12,18 @@ struct Hip_Pair(K, V)
     V value;
 }
 
-struct Hip_Bucket(K, V)
+private struct Hip_Bucket(K, V)
 {
     Hip_DynamicArray!(Hip_Pair!(K, V*)) pairs;
-
+    
     void appendPair(K key, V* val)
     {
-        auto pair = Hip_Pair!(K,V*)();
+        cprint("Appended %d as %s", *val, key);
+        Hip_Pair!(K,V*) pair;
         pair.key = key;
         pair.value = val;
         pairs~= pair;
+        cprint("Appended %d as %s", *val, key);
     }
 }
 
@@ -38,20 +43,17 @@ struct Hip_AssociativeArray(K, V)
 
     static ref auto create()
     {
-        import precompiler.clib.stdio : puts;
-        Hip_AssociativeArray!(K,V)* aa = New!(Hip_AssociativeArray!(K,V));
-        *aa = Hip_AssociativeArray!(K,V)();
-        puts("Added key!");
-        (*aa).table = Hip_DynamicArray!(Hip_Bucket!(K,V))(Hip__INITIAL_AA_SIZE);
+        Hip_AssociativeArray!(K,V) aa;
+        aa.table = Hip_DynamicArray!(Hip_Bucket!(K,V))(Hip__INITIAL_AA_SIZE);
 
         for(int i = 0, len = Hip__INITIAL_AA_SIZE; i < len; i++)
         {
-            (*aa).table[i] = Hip_Bucket!(K,V)();
-            (*aa).table[i].pairs.reserve(4);//Low sized
+            Hip_Bucket!(K,V) buck;
+            buck.pairs.reserve(4);
+            aa.table~= buck;
         }
         aa._size = Hip__INITIAL_AA_SIZE;
         return aa;
-        
     }
 
     // private void growSize()
@@ -62,42 +64,55 @@ struct Hip_AssociativeArray(K, V)
     
     V* get(K key)
     {
+        import precompiler.implementations.string;
         Hip_Bucket!(K,V) ret = table[hash(key)];
         size_t count = 0;
         while(count < ret.pairs.length)
         {
-            
             if(key == ret.pairs[count].key)
+            {
+                cprint("MITSUKETA K:%s V:%d", ret.pairs[count].key, *ret.pairs[count].value);
                 return ret.pairs[count].value;
+            }
             count++;
         }
         return null;
     }
+    // V* get(string key){return get(cast(char*)key);}
     void set(K key, V val)
     {
         if(this.get(key) == null)//If a key is not replaced
         {
             _count++;
             size_t i = hash(key);
-            table[i].appendPair(key, &val);
+            V* toStore = New!V;
+            *toStore = val;
+            
+            // cprint("K: %s, V: %d", key, *toStore);
+            table[i].appendPair(key, toStore);
+            // cprint("Hash for %s is %u", key, hash(key));
             // if(count> _size*0.75)growSize();
         }
         else
         {
             auto bucket = table[hash(key)];
+            // Destroy(bucket.value);
+            // bucket.
         }
         
     }
+    mixin("ref V opIndex(K key){return *this.get(key);}");
 
 
-    // bool isEmpty(){return table.length == 0;}
+    @property bool isEmpty(){return table.length == 0;}
     private size_t hash(K key){return hashFunction(key) & table.length-1;}
-    // ref auto opIndex(K index){return get(index);}
     // auto opIndexAssign(T)(T value, K key){set(key, value);return value;}
     ~this()
     {
-        import precompiler.clib.stdio : puts;
         puts("Destroyed AA");
+        for(int i = 0, len = this.table.length; i < len; i++)
+            destroy(table[i]); //DynArray already got free call
+        destroy(table);
     }
 
     private size_t _size;

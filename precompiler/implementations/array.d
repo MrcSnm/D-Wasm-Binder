@@ -12,14 +12,14 @@ import std.conv:to;
 */
 mixin template Hip_ArrayImpl(alias arrName, T)
 {
-    T opIndex(size_t ind){return arrName[ind];}
-    T opIndexAssign(T value, size_t index)
+    ref T opIndex(size_t ind){return arrName[ind];}
+    ref T opIndexAssign(T value, size_t index)
     {
         // if(this.length < index)
         //     printf("\nSomething happened\n");
         //, (arrName~"["~to!string(index)~"]Out of range");
         arrName[index] = value;
-        return value;
+        return arrName[index];
     }
     size_t opDollar(){return this.length;}
 
